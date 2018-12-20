@@ -1,0 +1,8 @@
+ui_print("xeriumO kernel for the Galaxy S6");
+ui_print("	");
+ui_print("Extracting kernel files...");
+package_extract_file("boot.img", "/dev/block/platform/15570000.ufs/by-name/BOOT");
+set_progress(1.0);
+ui_print("Enjoy your kernel!");
+ui_print("	");
+ui_print("Made by nysadev");
