@@ -1,4 +1,4 @@
-#!/bin/bash
+a#!/bin/bash
 
 # XeriumO build script
 
@@ -37,9 +37,9 @@ while true; do
     read -p "${bldblu} What device are you building for? (flat, edge) ${txtrst}" yn
     case $yn in
         # Make for flat
-        [flat]* ) export device=flat; export defconfig=flat_defconfig; break;;
+        [flat]* ) export device=flat; export defconfig=zeroflte_defconfig; break;;
         # Make for edge
-        [edge]* ) export device=edge; export defconfig=edge_defconfig; break;;
+        [edge]* ) export device=edge; export defconfig=zerolte_defconfig; break;;
         * ) echo "${bldred} Please answer flat or edge! ${txtrst}"; echo "";;
     esac
 done
