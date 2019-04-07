@@ -1,4 +1,4 @@
-a#!/bin/bash
+#!/bin/bash
 
 # Vega build script
 
@@ -13,16 +13,18 @@ bldblu=${txtbld}$(tput setaf 4) # blue
 bldcya=${txtbld}$(tput setaf 6) # cyan
 txtrst=$(tput sgr0) # Reset
 
-echo -e "${bldcya} Xerium kernel for the S6 ${txtrst}"
+echo -e "${bldcya} Vega kernel for the S6 ${txtrst}"
 echo -e "${bldred} Note: if you are not running as sudo you should be! ${txtrst}"
 echo ""
 
 # Set exports for later script use
 echo -e "${bldgrn} Setting exports ${txtrst}"
-export KERNELDIR=~/vega-s6/
+export KERNELDIR=~/vega-s6
 export SCRIPTS=~/vega-s6/xscripts
 export ARCH=arm64
-export CROSS_COMPILE=~/aarch64-linux-android-6.x/bin/aarch64-linux-android-
+
+read -p "Enter the path to your ARM64 toolchain: "  patharm64
+export CROSS_COMPILE=$patharm64
 echo ""
 
 # Clean up
@@ -33,16 +35,15 @@ sudo rm -rf out
 echo ""
 
 # Prompt the user what they are building for
-while true; do
-    read -p "${bldblu} What device are you building for? (flat, edge) ${txtrst}" yn
-    case $yn in
-        # Make for flat
-        [flat]* ) export device=flat; export defconfig=zeroflte_defconfig; break;;
-        # Make for edge
-        [edge]* ) export device=edge; export defconfig=zerolte_defconfig; break;;
-        * ) echo "${bldred} Please answer flat or edge! ${txtrst}"; echo "";;
-    esac
-done
+echo "${bldblu} Please choose your device (g920x, g925x, g920t, g925t) ${txtrst}"
+read n
+case $n in
+    g920x) export device=g920x; export defconfig=zeroflte_defconfig;;
+    g925x) export device=g925x; export defconfig=zerolte_defconfig;;
+    g920t) export device=g920t; export defconfig=zeroflte_defconfig;;
+    g925t) export device=g925t; export defconfig=zerolte_defconfig;;
+    *) echo "invalid option"; exit 0;;
+esac
 mkdir -p ${KERNELDIR}/out/${device}
 mkdir -p ${KERNELDIR}/out/${device}/temp
 echo ""
@@ -54,7 +55,7 @@ echo ""
 
 # Make kernel
 export cores=$(nproc --all)
-echo -e "${bldgrn} Making Xerium Kernel with ${cores} cores  ${txtrst}"
+echo -e "${bldgrn} Making Vega Kernel with ${cores} cores  ${txtrst}"
 make -j$(nproc --all)
 echo ""
 
@@ -75,7 +76,7 @@ if [ -e $KERNELDIR/arch/arm64/boot/Image ]; then
   while true; do
       read -p "${bldblu} Do you want to create a dt.img? (yes, no) ${txtrst}" yn
       case $yn in
-          [yes]* ) ${SCRIPTS}/dtbtool -o dt.img -s 2048 -p ./scripts/dtc/dtc ${KERNELDIR}/arch/arm64/boot/dts/; break;;
+          [yes]* ) ${SCRIPTS}/dtbtool -o dt.img -s 2048 -p ${SCRIPTS}/xscripts/dtc/dtc ${KERNELDIR}/arch/arm64/boot/dts/; break;;
           [no]* ) break;;
           * ) echo "${bldred} Please answer yes/no! ${txtrst}"; echo "";;
       esac
@@ -94,7 +95,7 @@ if [ -e $KERNELDIR/arch/arm64/boot/Image ]; then
       read -p "${bldblu} Do you want to use a stock or custom built dt.img? (s, c) ${txtrst}" yn
       case $yn in
           # Stock
-          [s]* ) ./mkbootimg --kernel ${KERNELDIR}/out/$device/temp/Image --dt ${KERNELDIR}/dt.img --ramdisk ${KERNELDIR}/out/$device/temp/ramdisk.gz --base 0x10000000 --kernel_offset 0x00008000 --ramdisk_offset 0x01000000 --tags_offset 0x00000100 --pagesize 2048 -o ${KERNELDIR}/out/$device/boot.img; break;;
+          [s]* ) ./mkbootimg --kernel ${KERNELDIR}/out/$device/temp/Image --dt ${KERNELDIR}/$device/dt.img --ramdisk ${KERNELDIR}/out/$device/temp/ramdisk.gz --base 0x10000000 --kernel_offset 0x00008000 --ramdisk_offset 0x01000000 --tags_offset 0x00000100 --pagesize 2048 -o ${KERNELDIR}/out/$device/boot.img; break;;
           # Custom
           [c]* ) ./mkbootimg --kernel ${KERNELDIR}/out/$device/temp/Image --dt ${KERNELDIR}/out/$device/temp/dt.img --ramdisk ${KERNELDIR}/out/$device/temp/ramdisk.gz --base 0x10000000 --kernel_offset 0x00008000 --ramdisk_offset 0x01000000 --tags_offset 0x00000100 --pagesize 2048 -o ${KERNELDIR}/out/$device/boot.img; break;;
           * ) echo "${bldred} Please answer s/c! ${txtrst}"; echo "";;
@@ -108,7 +109,7 @@ if [ -e $KERNELDIR/arch/arm64/boot/Image ]; then
   cd ${KERNELDIR}/out/${device}
   zip -r xeriumO-${device}-`date +[%d-%m-%y]`.zip . -x \*temp\*
   sudo rm -rf ${KERNELDIR}/out/${device}/temp
-  echo -e "${bldcya} DONE! Find the kernel in /out/${device}/*.zip ${txtrst}"
+  echo -e "${bldcya} DONE! Find the kernel in ${KERNELDIR}/out/${device}/*.zip ${txtrst}"
   echo -e "${bldcya} Vega kernel for the S6 ${txtrst}"
   echo -e "${bldcya} Script made by nysadev ${txtrst}"
 
