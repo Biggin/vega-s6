@@ -1,6 +1,6 @@
 a#!/bin/bash
 
-# XeriumO build script
+# Vega build script
 
 # Colorize and add text parameters
 red=$(tput setaf 1) # red
@@ -19,10 +19,10 @@ echo ""
 
 # Set exports for later script use
 echo -e "${bldgrn} Setting exports ${txtrst}"
-export KERNELDIR=/home/nysadev/xeriumO
-export SCRIPTS=/home/nysadev/xeriumO/xscripts
+export KERNELDIR=~/vega-s6/
+export SCRIPTS=~/vega-s6/xscripts
 export ARCH=arm64
-export CROSS_COMPILE=/home/nysadev/aarch64-linux-android-6.x/bin/aarch64-linux-android-
+export CROSS_COMPILE=~/aarch64-linux-android-6.x/bin/aarch64-linux-android-
 echo ""
 
 # Clean up
@@ -85,7 +85,7 @@ if [ -e $KERNELDIR/arch/arm64/boot/Image ]; then
   # Pack ramdisk up
   echo -e "${bldgrn} Packing ramdisk ${txtrst}"
   cd ${SCRIPTS}
-  ./mkbootfs ${KERNELDIR}/${device}/ramdisk | gzip > ${KERNELDIR}/out/$device/temp/ramdisk.gz
+  ./mkbootfs ${KERNELDIR}/Vega/ramdisk | gzip > ${KERNELDIR}/out/$device/temp/ramdisk.gz
   echo ""
 
   # Prompt the user if they want to use a stock dt.img, or custom made from earlier.
@@ -109,7 +109,7 @@ if [ -e $KERNELDIR/arch/arm64/boot/Image ]; then
   zip -r xeriumO-${device}-`date +[%d-%m-%y]`.zip . -x \*temp\*
   sudo rm -rf ${KERNELDIR}/out/${device}/temp
   echo -e "${bldcya} DONE! Find the kernel in /out/${device}/*.zip ${txtrst}"
-  echo -e "${bldcya} Xerium kernel for the S6 ${txtrst}"
+  echo -e "${bldcya} Vega kernel for the S6 ${txtrst}"
   echo -e "${bldcya} Script made by nysadev ${txtrst}"
 
 else
