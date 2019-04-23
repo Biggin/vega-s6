@@ -82,3 +82,8 @@ GTAGS
 
 # xerium specific
 out
+Vega/Out/*
+fips_fmp_utils
+security/selinux_n/flask.h
+security/selinux_n/av_permissions.h
+drivers/gator/gator_src_md5.h
